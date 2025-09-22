@@ -52,11 +52,22 @@ export interface MetadadosBairro {
     potencialSolarBairro: number;
 }
 
+export interface DadosSerasa {
+    creditoDisponivel: string;
+    scoreSerasa: number;
+    ultimaConsulta: string;
+    restricoes: boolean;
+    parcelasEmAtraso: number;
+    consultasRealizadas: number;
+    tempoRelacionamento: string;
+}
+
 export interface DadosEnriquecidos {
-    rendaEstimada: string;
+    creditoDisponivel: string;
     veiculos: Veiculo[];
     tipoResidencia: string;
     scoreSocioeconomico: string;
+    dadosSerasa: DadosSerasa;
     indicadoresRegiao: {
         rendaMedia: number;
         densidadePopulacional: number;
@@ -160,7 +171,16 @@ export const simulacaoExemplo: SimulacaoUsuario = {
 };
 
 export const dadosEnriquecidosExemplo: DadosEnriquecidos = {
-    rendaEstimada: "R$ 8.000 - R$ 12.000",
+    creditoDisponivel: "R$ 45.000 - R$ 60.000",
+    dadosSerasa: {
+        creditoDisponivel: "R$ 45.000 - R$ 60.000",
+        scoreSerasa: 850,
+        ultimaConsulta: "15/12/2024",
+        restricoes: false,
+        parcelasEmAtraso: 0,
+        consultasRealizadas: 3,
+        tempoRelacionamento: "5 anos"
+    },
     veiculos: [
         {
             tipo: "Sedan",

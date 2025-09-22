@@ -24,6 +24,10 @@ import {
   Shield,
   TreePine,
   AlertTriangle,
+  CreditCard,
+  CheckCircle,
+  XCircle,
+  Clock,
 } from "lucide-react";
 import { simulacaoExemplo, dadosEnriquecidosExemplo } from "@/lib/mock-data";
 import { useUser } from "@/lib/user-context";
@@ -61,9 +65,10 @@ export default function DashboardPage() {
       </div>
 
       <Tabs defaultValue="lead" className="w-full">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="lead">Dados do Lead</TabsTrigger>
           <TabsTrigger value="enriquecidos">Dados Enriquecidos</TabsTrigger>
+          <TabsTrigger value="serasa">Dados Serasa</TabsTrigger>
           <TabsTrigger value="bairro">Metadados do Bairro</TabsTrigger>
         </TabsList>
 
@@ -232,10 +237,10 @@ export default function DashboardPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-gray-600">
-                        Renda Estimada
+                        Crédito Disponível (Serasa)
                       </label>
-                      <p className="font-semibold">
-                        {dadosEnriquecidos.rendaEstimada}
+                      <p className="font-semibold text-green-600">
+                        {dadosEnriquecidos.creditoDisponivel}
                       </p>
                     </div>
                     <div>
@@ -506,6 +511,244 @@ export default function DashboardPage() {
                     <p className="text-sm text-gray-600">
                       Dias para fechamento baseado no histórico de leads
                       similares
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="serasa">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center">
+                  <CreditCard className="mr-2 h-5 w-5" />
+                  Informações de Crédito - Serasa
+                </CardTitle>
+                <CardDescription>
+                  Dados de crédito e score obtidos do Serasa
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-lg mb-3">
+                        Score e Crédito
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Score Serasa:</span>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-2xl font-bold text-green-600">
+                              {dadosEnriquecidos.dadosSerasa.scoreSerasa}
+                            </span>
+                            <Badge variant="default">Excelente</Badge>
+                          </div>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Crédito Disponível:
+                          </span>
+                          <span className="font-semibold text-green-600 text-lg">
+                            {dadosEnriquecidos.dadosSerasa.creditoDisponivel}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Última Consulta:
+                          </span>
+                          <span className="font-semibold">
+                            {dadosEnriquecidos.dadosSerasa.ultimaConsulta}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Tempo de Relacionamento:
+                          </span>
+                          <span className="font-semibold">
+                            {dadosEnriquecidos.dadosSerasa.tempoRelacionamento}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <h3 className="font-semibold text-lg mb-3">
+                        Status Financeiro
+                      </h3>
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-600">Restrições:</span>
+                          <div className="flex items-center space-x-2">
+                            {dadosEnriquecidos.dadosSerasa.restricoes ? (
+                              <>
+                                <XCircle className="h-5 w-5 text-red-500" />
+                                <Badge variant="destructive">Sim</Badge>
+                              </>
+                            ) : (
+                              <>
+                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                <Badge variant="default">Não</Badge>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Parcelas em Atraso:
+                          </span>
+                          <span className="font-semibold">
+                            {dadosEnriquecidos.dadosSerasa.parcelasEmAtraso}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">
+                            Consultas Realizadas:
+                          </span>
+                          <span className="font-semibold">
+                            {dadosEnriquecidos.dadosSerasa.consultasRealizadas}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <TrendingUp className="mr-2 h-5 w-5" />
+                    Análise de Risco
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <div className="bg-green-100 rounded-full w-20 h-20 flex items-center justify-center mx-auto mb-3">
+                        <span className="text-2xl font-bold text-green-600">
+                          {dadosEnriquecidos.dadosSerasa.scoreSerasa}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Score Serasa (0-1000)
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Classificação:</span>
+                        <Badge variant="default">Baixo Risco</Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">
+                          Aprovação Estimada:
+                        </span>
+                        <span className="font-semibold text-green-600">
+                          95%
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-gray-600">Limite Sugerido:</span>
+                        <span className="font-semibold">
+                          R$ {dadosEnriquecidos.dadosSerasa.creditoDisponivel}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <Clock className="mr-2 h-5 w-5" />
+                    Histórico de Consultas
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <div>
+                          <p className="font-semibold">Consulta Atual</p>
+                          <p className="text-sm text-gray-600">
+                            {dadosEnriquecidos.dadosSerasa.ultimaConsulta}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="outline">Ativa</Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                        <div>
+                          <p className="font-semibold">Consulta Anterior</p>
+                          <p className="text-sm text-gray-600">10/12/2024</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline">Histórico</Badge>
+                    </div>
+
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                        <div>
+                          <p className="font-semibold">Primeira Consulta</p>
+                          <p className="text-sm text-gray-600">15/01/2020</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline">Inicial</Badge>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Recomendações de Venda</CardTitle>
+                <CardDescription>
+                  Estratégias baseadas no perfil de crédito do lead
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid md:grid-cols-3 gap-6">
+                  <div className="text-center">
+                    <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                      <CheckCircle className="h-8 w-8 text-green-600" />
+                    </div>
+                    <h3 className="font-semibold mb-2">Aprovação Garantida</h3>
+                    <p className="text-sm text-gray-600">
+                      Score alto e sem restrições garantem aprovação do
+                      financiamento
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                      <DollarSign className="h-8 w-8 text-blue-600" />
+                    </div>
+                    <h3 className="font-semibold mb-2">Financiamento Total</h3>
+                    <p className="text-sm text-gray-600">
+                      Crédito disponível permite financiar 100% do investimento
+                    </p>
+                  </div>
+                  <div className="text-center">
+                    <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
+                      <Zap className="h-8 w-8 text-purple-600" />
+                    </div>
+                    <h3 className="font-semibold mb-2">Fechamento Rápido</h3>
+                    <p className="text-sm text-gray-600">
+                      Perfil ideal permite fechamento em até 7 dias
                     </p>
                   </div>
                 </div>
