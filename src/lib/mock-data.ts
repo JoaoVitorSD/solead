@@ -24,9 +24,37 @@ export interface SimulacaoUsuario {
     orcamentoMaximo: number;
 }
 
+export interface Veiculo {
+    tipo: string;
+    marca: string;
+    modelo: string;
+    ano: number;
+    combustivel: 'gasolina' | 'etanol' | 'flex' | 'eletrico' | 'hibrido';
+    valorEstimado: number;
+}
+
+export interface MetadadosBairro {
+    nome: string;
+    zona: string;
+    rendaMediaFamiliar: number;
+    densidadePopulacional: number;
+    indiceDesenvolvimentoHumano: number;
+    percentualResidencias: number;
+    percentualComercial: number;
+    percentualIndustrial: number;
+    qualidadeInfraestrutura: 'A' | 'B' | 'C' | 'D';
+    proximidadeTransportePublico: number;
+    indiceSeguranca: number;
+    coberturaVegetal: number;
+    altitudeMedia: number;
+    inclinacaoTerreno: number;
+    obstrucoesSolares: string[];
+    potencialSolarBairro: number;
+}
+
 export interface DadosEnriquecidos {
     rendaEstimada: string;
-    veiculos: number;
+    veiculos: Veiculo[];
     tipoResidencia: string;
     scoreSocioeconomico: string;
     indicadoresRegiao: {
@@ -40,6 +68,7 @@ export interface DadosEnriquecidos {
         altitude: number;
         irradiacaoSolar: number;
     };
+    metadadosBairro: MetadadosBairro;
     potencialSolar: {
         horasSolDia: number;
         eficienciaEstimada: number;
@@ -132,7 +161,32 @@ export const simulacaoExemplo: SimulacaoUsuario = {
 
 export const dadosEnriquecidosExemplo: DadosEnriquecidos = {
     rendaEstimada: "R$ 8.000 - R$ 12.000",
-    veiculos: 2,
+    veiculos: [
+        {
+            tipo: "Sedan",
+            marca: "Toyota",
+            modelo: "Corolla",
+            ano: 2022,
+            combustivel: "hibrido",
+            valorEstimado: 120000
+        },
+        {
+            tipo: "SUV",
+            marca: "Volkswagen",
+            modelo: "T-Cross",
+            ano: 2021,
+            combustivel: "flex",
+            valorEstimado: 95000
+        },
+        {
+            tipo: "Hatchback",
+            marca: "Nissan",
+            modelo: "Leaf",
+            ano: 2023,
+            combustivel: "eletrico",
+            valorEstimado: 180000
+        }
+    ],
     tipoResidencia: "Casa própria",
     scoreSocioeconomico: "A+",
     indicadoresRegiao: {
@@ -145,6 +199,24 @@ export const dadosEnriquecidosExemplo: DadosEnriquecidos = {
         longitude: -43.9345,
         altitude: 858,
         irradiacaoSolar: 5.2
+    },
+    metadadosBairro: {
+        nome: "Savassi",
+        zona: "Centro-Sul",
+        rendaMediaFamiliar: 8500,
+        densidadePopulacional: 4200,
+        indiceDesenvolvimentoHumano: 0.92,
+        percentualResidencias: 65,
+        percentualComercial: 30,
+        percentualIndustrial: 5,
+        qualidadeInfraestrutura: "A",
+        proximidadeTransportePublico: 95,
+        indiceSeguranca: 8.5,
+        coberturaVegetal: 25,
+        altitudeMedia: 860,
+        inclinacaoTerreno: 2.5,
+        obstrucoesSolares: ["Prédios altos (Norte)", "Árvores centenárias (Leste)"],
+        potencialSolarBairro: 8.7
     },
     potencialSolar: {
         horasSolDia: 6.8,
