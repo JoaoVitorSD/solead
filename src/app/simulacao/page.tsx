@@ -44,6 +44,8 @@ import {
   Star,
   Clock,
   DollarSign,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import {
   fornecedores,
@@ -62,6 +64,13 @@ export default function SimulacaoPage() {
   const [fornecedoresFiltrados, setFornecedoresFiltrados] = useState<
     Fornecedor[]
   >([]);
+  const [errosValidacao, setErrosValidacao] = useState<{
+    [key: string]: boolean;
+  }>({});
+  const [ordenacao, setOrdenacao] = useState<{
+    campo: string;
+    direcao: "asc" | "desc";
+  }>({ campo: "", direcao: "asc" });
 
   const atualizarDadosUsuario = (campo: string, valor: string) => {
     salvarDadosUsuario({ [campo]: valor });
@@ -71,20 +80,130 @@ export default function SimulacaoPage() {
     salvarDadosUsuario({
       consumoAtual,
       metaGeracao,
-      numeroPlacas
+      numeroPlacas,
     });
-    alert("Dados salvos com sucesso! Você pode visualizá-los no Dashboard do Vendedor.");
+    alert(
+      "Dados salvos com sucesso! Você pode visualizá-los no Dashboard do Vendedor."
+    );
+  };
+
+  const validarCampos = () => {
+    const erros: { [key: string]: boolean } = {};
+
+    if (!cidadeSelecionada) {
+      erros.cidade = true;
+    }
+    if (!consumoAtual || consumoAtual <= 0) {
+      erros.consumoAtual = true;
+    }
+    if (!metaGeracao || metaGeracao <= 0) {
+      erros.metaGeracao = true;
+    }
+    if (!numeroPlacas || numeroPlacas <= 0) {
+      erros.numeroPlacas = true;
+    }
+
+    setErrosValidacao(erros);
+    return Object.keys(erros).length === 0;
   };
 
   const filtrarFornecedores = () => {
-    if (!cidadeSelecionada) {
-      setFornecedoresFiltrados([]);
+    if (!validarCampos()) {
       return;
     }
+
     const filtrados = fornecedores.filter(
       (f) => f.cidade === cidadeSelecionada
     );
     setFornecedoresFiltrados(filtrados);
+  };
+
+  const ordenarFornecedores = (campo: string) => {
+    const novaDirecao =
+      ordenacao.campo === campo && ordenacao.direcao === "asc" ? "desc" : "asc";
+    setOrdenacao({ campo, direcao: novaDirecao });
+
+    const fornecedoresOrdenados = [...fornecedoresFiltrados].sort((a, b) => {
+      let valorA: any, valorB: any;
+
+      switch (campo) {
+        case "nome":
+          valorA = a.nome;
+          valorB = b.nome;
+          break;
+        case "precoPorPlaca":
+          valorA = a.precoPorPlaca;
+          valorB = b.precoPorPlaca;
+          break;
+        case "custoInstalacao":
+          valorA = a.custoInstalacao;
+          valorB = b.custoInstalacao;
+          break;
+        case "tempoInstalacao":
+          valorA = a.tempoInstalacao;
+          valorB = b.tempoInstalacao;
+          break;
+        case "avaliacao":
+          valorA = a.avaliacao;
+          valorB = b.avaliacao;
+          break;
+        case "roiAnual":
+          valorA = calcularComparacao(a).roiAnual;
+          valorB = calcularComparacao(b).roiAnual;
+          break;
+        default:
+          return 0;
+      }
+
+      if (valorA < valorB) return novaDirecao === "asc" ? -1 : 1;
+      if (valorA > valorB) return novaDirecao === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    setFornecedoresFiltrados(fornecedoresOrdenados);
+  };
+
+  const obterCorCelula = (
+    campo: string,
+    valor: any,
+    fornecedor: Fornecedor
+  ) => {
+    const calculo = calcularComparacao(fornecedor);
+
+    switch (campo) {
+      case "precoPorPlaca":
+        return valor <= 850
+          ? "bg-green-100 text-green-800"
+          : valor >= 950
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-800";
+      case "custoInstalacao":
+        return valor <= 2500
+          ? "bg-green-100 text-green-800"
+          : valor >= 3000
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-800";
+      case "tempoInstalacao":
+        return valor <= 12
+          ? "bg-green-100 text-green-800"
+          : valor >= 20
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-800";
+      case "avaliacao":
+        return valor >= 4.8
+          ? "bg-green-100 text-green-800"
+          : valor <= 4.4
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-800";
+      case "roiAnual":
+        return valor >= 18
+          ? "bg-green-100 text-green-800"
+          : valor <= 12
+          ? "bg-red-100 text-red-800"
+          : "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
   };
 
   const calcularComparacao = (fornecedor: Fornecedor) => {
@@ -123,7 +242,7 @@ export default function SimulacaoPage() {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">Dados Pessoais</h3>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="cpf">CPF</Label>
@@ -131,7 +250,9 @@ export default function SimulacaoPage() {
                       id="cpf"
                       placeholder="000.000.000-00"
                       value={dadosUsuario.cpf}
-                      onChange={(e) => atualizarDadosUsuario("cpf", e.target.value)}
+                      onChange={(e) =>
+                        atualizarDadosUsuario("cpf", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -140,7 +261,9 @@ export default function SimulacaoPage() {
                       id="nome"
                       placeholder="Seu nome completo"
                       value={dadosUsuario.nome}
-                      onChange={(e) => atualizarDadosUsuario("nome", e.target.value)}
+                      onChange={(e) =>
+                        atualizarDadosUsuario("nome", e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -153,7 +276,9 @@ export default function SimulacaoPage() {
                       type="email"
                       placeholder="seu@email.com"
                       value={dadosUsuario.email}
-                      onChange={(e) => atualizarDadosUsuario("email", e.target.value)}
+                      onChange={(e) =>
+                        atualizarDadosUsuario("email", e.target.value)
+                      }
                     />
                   </div>
                   <div>
@@ -162,7 +287,9 @@ export default function SimulacaoPage() {
                       id="telefone"
                       placeholder="(00) 00000-0000"
                       value={dadosUsuario.telefone}
-                      onChange={(e) => atualizarDadosUsuario("telefone", e.target.value)}
+                      onChange={(e) =>
+                        atualizarDadosUsuario("telefone", e.target.value)
+                      }
                     />
                   </div>
                 </div>
@@ -173,21 +300,33 @@ export default function SimulacaoPage() {
                     id="endereco"
                     placeholder="Rua, número, bairro"
                     value={dadosUsuario.endereco}
-                    onChange={(e) => atualizarDadosUsuario("endereco", e.target.value)}
+                    onChange={(e) =>
+                      atualizarDadosUsuario("endereco", e.target.value)
+                    }
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="cidade">Cidade</Label>
+                    <Label htmlFor="cidade">Cidade *</Label>
                     <Select
                       value={cidadeSelecionada}
                       onValueChange={(value) => {
                         setCidadeSelecionada(value);
                         atualizarDadosUsuario("cidade", value);
+                        if (errosValidacao.cidade) {
+                          setErrosValidacao((prev) => ({
+                            ...prev,
+                            cidade: false,
+                          }));
+                        }
                       }}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger
+                        className={
+                          errosValidacao.cidade ? "border-red-500" : ""
+                        }
+                      >
                         <SelectValue placeholder="Selecione uma cidade" />
                       </SelectTrigger>
                       <SelectContent>
@@ -198,12 +337,19 @@ export default function SimulacaoPage() {
                         ))}
                       </SelectContent>
                     </Select>
+                    {errosValidacao.cidade && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Cidade é obrigatória
+                      </p>
+                    )}
                   </div>
                   <div>
                     <Label htmlFor="tipoImovel">Tipo de Imóvel</Label>
                     <Select
                       value={dadosUsuario.tipoImovel}
-                      onValueChange={(value) => atualizarDadosUsuario("tipoImovel", value)}
+                      onValueChange={(value) =>
+                        atualizarDadosUsuario("tipoImovel", value)
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione" />
@@ -221,7 +367,7 @@ export default function SimulacaoPage() {
 
               <div className="space-y-4 border-t pt-4">
                 <h3 className="font-semibold text-lg">Informações Técnicas</h3>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="areaDisponivel">Área Disponível (m²)</Label>
@@ -230,50 +376,104 @@ export default function SimulacaoPage() {
                       type="number"
                       placeholder="50"
                       value={dadosUsuario.areaDisponivel}
-                      onChange={(e) => atualizarDadosUsuario("areaDisponivel", e.target.value)}
+                      onChange={(e) =>
+                        atualizarDadosUsuario("areaDisponivel", e.target.value)
+                      }
                     />
                   </div>
                   <div>
-                    <Label htmlFor="orcamentoMaximo">Orçamento Máximo (R$)</Label>
+                    <Label htmlFor="orcamentoMaximo">
+                      Orçamento Máximo (R$)
+                    </Label>
                     <Input
                       id="orcamentoMaximo"
                       type="number"
                       placeholder="25000"
                       value={dadosUsuario.orcamentoMaximo}
-                      onChange={(e) => atualizarDadosUsuario("orcamentoMaximo", e.target.value)}
+                      onChange={(e) =>
+                        atualizarDadosUsuario("orcamentoMaximo", e.target.value)
+                      }
                     />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="consumo">Consumo Atual (kWh/mês)</Label>
+                    <Label htmlFor="consumo">Consumo Atual (kWh/mês) *</Label>
                     <Input
                       id="consumo"
                       type="number"
                       value={consumoAtual}
-                      onChange={(e) => setConsumoAtual(Number(e.target.value))}
+                      onChange={(e) => {
+                        setConsumoAtual(Number(e.target.value));
+                        if (errosValidacao.consumoAtual) {
+                          setErrosValidacao((prev) => ({
+                            ...prev,
+                            consumoAtual: false,
+                          }));
+                        }
+                      }}
+                      className={
+                        errosValidacao.consumoAtual ? "border-red-500" : ""
+                      }
                     />
+                    {errosValidacao.consumoAtual && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Consumo atual é obrigatório
+                      </p>
+                    )}
                   </div>
                   <div>
-                    <Label htmlFor="meta">Meta de Geração (kWh/mês)</Label>
+                    <Label htmlFor="meta">Meta de Geração (kWh/mês) *</Label>
                     <Input
                       id="meta"
                       type="number"
                       value={metaGeracao}
-                      onChange={(e) => setMetaGeracao(Number(e.target.value))}
+                      onChange={(e) => {
+                        setMetaGeracao(Number(e.target.value));
+                        if (errosValidacao.metaGeracao) {
+                          setErrosValidacao((prev) => ({
+                            ...prev,
+                            metaGeracao: false,
+                          }));
+                        }
+                      }}
+                      className={
+                        errosValidacao.metaGeracao ? "border-red-500" : ""
+                      }
                     />
+                    {errosValidacao.metaGeracao && (
+                      <p className="text-red-500 text-sm mt-1">
+                        Meta de geração é obrigatória
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div>
-                  <Label htmlFor="placas">Número de Placas</Label>
+                  <Label htmlFor="placas">Número de Placas *</Label>
                   <Input
                     id="placas"
                     type="number"
                     value={numeroPlacas}
-                    onChange={(e) => setNumeroPlacas(Number(e.target.value))}
+                    onChange={(e) => {
+                      setNumeroPlacas(Number(e.target.value));
+                      if (errosValidacao.numeroPlacas) {
+                        setErrosValidacao((prev) => ({
+                          ...prev,
+                          numeroPlacas: false,
+                        }));
+                      }
+                    }}
+                    className={
+                      errosValidacao.numeroPlacas ? "border-red-500" : ""
+                    }
                   />
+                  {errosValidacao.numeroPlacas && (
+                    <p className="text-red-500 text-sm mt-1">
+                      Número de placas é obrigatório
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -281,9 +481,9 @@ export default function SimulacaoPage() {
                 <Button onClick={filtrarFornecedores} className="w-full">
                   Buscar Fornecedores
                 </Button>
-                <Button 
-                  onClick={salvarDadosCompletos} 
-                  variant="outline" 
+                <Button
+                  onClick={salvarDadosCompletos}
+                  variant="outline"
                   className="w-full"
                 >
                   Salvar Dados para Dashboard
@@ -313,11 +513,166 @@ export default function SimulacaoPage() {
                     <Table>
                       <TableHeader>
                         <TableRow>
-                          <TableHead>Fornecedor</TableHead>
-                          <TableHead>Custo Total</TableHead>
-                          <TableHead>Economia Mensal</TableHead>
-                          <TableHead>Tempo Retorno</TableHead>
-                          <TableHead>ROI Anual</TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() => ordenarFornecedores("nome")}
+                          >
+                            <div className="flex items-center justify-between">
+                              Fornecedor
+                              <div className="flex flex-col">
+                                <ChevronUp
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "nome" &&
+                                    ordenacao.direcao === "asc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                                <ChevronDown
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "nome" &&
+                                    ordenacao.direcao === "desc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() => ordenarFornecedores("precoPorPlaca")}
+                          >
+                            <div className="flex items-center justify-between">
+                              Preço por Placa
+                              <div className="flex flex-col">
+                                <ChevronUp
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "precoPorPlaca" &&
+                                    ordenacao.direcao === "asc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                                <ChevronDown
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "precoPorPlaca" &&
+                                    ordenacao.direcao === "desc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() =>
+                              ordenarFornecedores("custoInstalacao")
+                            }
+                          >
+                            <div className="flex items-center justify-between">
+                              Custo Instalação
+                              <div className="flex flex-col">
+                                <ChevronUp
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "custoInstalacao" &&
+                                    ordenacao.direcao === "asc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                                <ChevronDown
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "custoInstalacao" &&
+                                    ordenacao.direcao === "desc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() =>
+                              ordenarFornecedores("tempoInstalacao")
+                            }
+                          >
+                            <div className="flex items-center justify-between">
+                              Tempo Instalação
+                              <div className="flex flex-col">
+                                <ChevronUp
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "tempoInstalacao" &&
+                                    ordenacao.direcao === "asc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                                <ChevronDown
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "tempoInstalacao" &&
+                                    ordenacao.direcao === "desc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() => ordenarFornecedores("avaliacao")}
+                          >
+                            <div className="flex items-center justify-between">
+                              Avaliação
+                              <div className="flex flex-col">
+                                <ChevronUp
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "avaliacao" &&
+                                    ordenacao.direcao === "asc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                                <ChevronDown
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "avaliacao" &&
+                                    ordenacao.direcao === "desc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </TableHead>
+                          <TableHead
+                            className="cursor-pointer hover:bg-gray-50"
+                            onClick={() => ordenarFornecedores("roiAnual")}
+                          >
+                            <div className="flex items-center justify-between">
+                              ROI Anual
+                              <div className="flex flex-col">
+                                <ChevronUp
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "roiAnual" &&
+                                    ordenacao.direcao === "asc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                                <ChevronDown
+                                  className={`h-3 w-3 ${
+                                    ordenacao.campo === "roiAnual" &&
+                                    ordenacao.direcao === "desc"
+                                      ? "text-blue-600"
+                                      : "text-gray-400"
+                                  }`}
+                                />
+                              </div>
+                            </div>
+                          </TableHead>
                           <TableHead>Ações</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -326,28 +681,75 @@ export default function SimulacaoPage() {
                           const calculo = calcularComparacao(fornecedor);
                           return (
                             <TableRow key={fornecedor.id}>
-                              <TableCell>
+                              <TableCell
+                                className={obterCorCelula(
+                                  "nome",
+                                  fornecedor.nome,
+                                  fornecedor
+                                )}
+                              >
                                 <div>
                                   <div className="font-medium">
                                     {fornecedor.nome}
                                   </div>
-                                  <div className="flex items-center text-sm text-gray-500">
+                                  <div className="flex items-center text-sm">
                                     <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
                                     {fornecedor.avaliacao}
                                   </div>
                                 </div>
                               </TableCell>
-                              <TableCell>
-                                R$ {calculo.custoTotal.toLocaleString("pt-BR")}
-                              </TableCell>
-                              <TableCell>
+                              <TableCell
+                                className={obterCorCelula(
+                                  "precoPorPlaca",
+                                  fornecedor.precoPorPlaca,
+                                  fornecedor
+                                )}
+                              >
                                 R${" "}
-                                {calculo.economiaMensal.toLocaleString("pt-BR")}
+                                {fornecedor.precoPorPlaca.toLocaleString(
+                                  "pt-BR"
+                                )}
                               </TableCell>
-                              <TableCell>
-                                {calculo.tempoRetorno.toFixed(1)} anos
+                              <TableCell
+                                className={obterCorCelula(
+                                  "custoInstalacao",
+                                  fornecedor.custoInstalacao,
+                                  fornecedor
+                                )}
+                              >
+                                R${" "}
+                                {fornecedor.custoInstalacao.toLocaleString(
+                                  "pt-BR"
+                                )}
                               </TableCell>
-                              <TableCell>
+                              <TableCell
+                                className={obterCorCelula(
+                                  "tempoInstalacao",
+                                  fornecedor.tempoInstalacao,
+                                  fornecedor
+                                )}
+                              >
+                                {fornecedor.tempoInstalacao} dias
+                              </TableCell>
+                              <TableCell
+                                className={obterCorCelula(
+                                  "avaliacao",
+                                  fornecedor.avaliacao,
+                                  fornecedor
+                                )}
+                              >
+                                <div className="flex items-center">
+                                  <Star className="h-3 w-3 mr-1 fill-yellow-400 text-yellow-400" />
+                                  {fornecedor.avaliacao}
+                                </div>
+                              </TableCell>
+                              <TableCell
+                                className={obterCorCelula(
+                                  "roiAnual",
+                                  calculo.roiAnual,
+                                  fornecedor
+                                )}
+                              >
                                 <Badge
                                   variant={
                                     calculo.roiAnual > 15

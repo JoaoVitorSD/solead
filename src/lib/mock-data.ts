@@ -153,6 +153,105 @@ export const fornecedores: Fornecedor[] = [
         avaliacao: 4.8,
         telefone: "(11) 99999-0006",
         email: "vendas@solarmax.com.br"
+    },
+    {
+        id: "7",
+        nome: "PowerSolar BH",
+        cidade: "Belo Horizonte",
+        precoPorPlaca: 780,
+        custoInstalacao: 2200,
+        tempoInstalacao: 25,
+        avaliacao: 4.3,
+        telefone: "(31) 99999-0007",
+        email: "contato@powersolar.com.br"
+    },
+    {
+        id: "8",
+        nome: "EcoEnergia RJ",
+        cidade: "Rio de Janeiro",
+        precoPorPlaca: 980,
+        custoInstalacao: 3200,
+        tempoInstalacao: 8,
+        avaliacao: 4.9,
+        telefone: "(21) 99999-0008",
+        email: "vendas@ecoenergia.com.br"
+    },
+    {
+        id: "9",
+        nome: "SolarPro SP",
+        cidade: "São Paulo",
+        precoPorPlaca: 860,
+        custoInstalacao: 2550,
+        tempoInstalacao: 16,
+        avaliacao: 4.7,
+        telefone: "(11) 99999-0009",
+        email: "orcamento@solarpro.com.br"
+    },
+    {
+        id: "10",
+        nome: "CleanEnergy BH",
+        cidade: "Belo Horizonte",
+        precoPorPlaca: 890,
+        custoInstalacao: 2650,
+        tempoInstalacao: 13,
+        avaliacao: 4.6,
+        telefone: "(31) 99999-0010",
+        email: "contato@cleanenergy.com.br"
+    },
+    {
+        id: "11",
+        nome: "SunTech RJ",
+        cidade: "Rio de Janeiro",
+        precoPorPlaca: 940,
+        custoInstalacao: 2900,
+        tempoInstalacao: 11,
+        avaliacao: 4.8,
+        telefone: "(21) 99999-0011",
+        email: "vendas@suntech.com.br"
+    },
+    {
+        id: "12",
+        nome: "SolarPlus SP",
+        cidade: "São Paulo",
+        precoPorPlaca: 870,
+        custoInstalacao: 2580,
+        tempoInstalacao: 17,
+        avaliacao: 4.5,
+        telefone: "(11) 99999-0012",
+        email: "info@solarplus.com.br"
+    },
+    {
+        id: "13",
+        nome: "GreenTech BH",
+        cidade: "Belo Horizonte",
+        precoPorPlaca: 830,
+        custoInstalacao: 2450,
+        tempoInstalacao: 19,
+        avaliacao: 4.4,
+        telefone: "(31) 99999-0013",
+        email: "contato@greentech.com.br"
+    },
+    {
+        id: "14",
+        nome: "EcoPower RJ",
+        cidade: "Rio de Janeiro",
+        precoPorPlaca: 960,
+        custoInstalacao: 3100,
+        tempoInstalacao: 9,
+        avaliacao: 4.8,
+        telefone: "(21) 99999-0014",
+        email: "vendas@ecopower.com.br"
+    },
+    {
+        id: "15",
+        nome: "SolarElite SP",
+        cidade: "São Paulo",
+        precoPorPlaca: 910,
+        custoInstalacao: 2750,
+        tempoInstalacao: 15,
+        avaliacao: 4.9,
+        telefone: "(11) 99999-0015",
+        email: "orcamento@solarelite.com.br"
     }
 ];
 
