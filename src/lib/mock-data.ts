@@ -346,13 +346,21 @@ export const dadosEnriquecidosExemplo: DadosEnriquecidos = {
 
 export const cidades = ["Belo Horizonte", "Rio de Janeiro", "São Paulo"];
 
+export interface ROICalculation {
+    custoTotal: number;
+    economiaMensal: number;
+    economiaAnual: number;
+    tempoRetorno: number;
+    roiAnual: number;
+}
+
 export function calcularROI(
     consumoAtual: number,
     metaGeracao: number,
     precoPorPlaca: number,
     custoInstalacao: number,
     numeroPlacas: number
-) {
+): ROICalculation {
     const custoTotal = (precoPorPlaca * numeroPlacas) + custoInstalacao;
     const economiaMensal = (consumoAtual - metaGeracao) * 0.65;
     const economiaAnual = economiaMensal * 12;

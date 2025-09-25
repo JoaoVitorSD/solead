@@ -124,7 +124,7 @@ export default function SimulacaoPage() {
     setOrdenacao({ campo, direcao: novaDirecao });
 
     const fornecedoresOrdenados = [...fornecedoresFiltrados].sort((a, b) => {
-      let valorA: any, valorB: any;
+      let valorA: string | number, valorB: string | number;
 
       switch (campo) {
         case "nome":
@@ -163,42 +163,38 @@ export default function SimulacaoPage() {
     setFornecedoresFiltrados(fornecedoresOrdenados);
   };
 
-  const obterCorCelula = (
-    campo: string,
-    valor: any,
-    fornecedor: Fornecedor
-  ) => {
-    const calculo = calcularComparacao(fornecedor);
+  const obterCorCelula = (campo: string, valor: string | number) => {
+    const numValor = typeof valor === "string" ? parseFloat(valor) : valor;
 
     switch (campo) {
       case "precoPorPlaca":
-        return valor <= 850
+        return numValor <= 850
           ? "bg-green-100 text-green-800"
-          : valor >= 950
+          : numValor >= 950
           ? "bg-red-100 text-red-800"
           : "bg-gray-100 text-gray-800";
       case "custoInstalacao":
-        return valor <= 2500
+        return numValor <= 2500
           ? "bg-green-100 text-green-800"
-          : valor >= 3000
+          : numValor >= 3000
           ? "bg-red-100 text-red-800"
           : "bg-gray-100 text-gray-800";
       case "tempoInstalacao":
-        return valor <= 12
+        return numValor <= 12
           ? "bg-green-100 text-green-800"
-          : valor >= 20
+          : numValor >= 20
           ? "bg-red-100 text-red-800"
           : "bg-gray-100 text-gray-800";
       case "avaliacao":
-        return valor >= 4.8
+        return numValor >= 4.8
           ? "bg-green-100 text-green-800"
-          : valor <= 4.4
+          : numValor <= 4.4
           ? "bg-red-100 text-red-800"
           : "bg-gray-100 text-gray-800";
       case "roiAnual":
-        return valor >= 18
+        return numValor >= 18
           ? "bg-green-100 text-green-800"
-          : valor <= 12
+          : numValor <= 12
           ? "bg-red-100 text-red-800"
           : "bg-gray-100 text-gray-800";
       default:
@@ -684,8 +680,7 @@ export default function SimulacaoPage() {
                               <TableCell
                                 className={obterCorCelula(
                                   "nome",
-                                  fornecedor.nome,
-                                  fornecedor
+                                  fornecedor.nome
                                 )}
                               >
                                 <div>
@@ -701,8 +696,7 @@ export default function SimulacaoPage() {
                               <TableCell
                                 className={obterCorCelula(
                                   "precoPorPlaca",
-                                  fornecedor.precoPorPlaca,
-                                  fornecedor
+                                  fornecedor.precoPorPlaca
                                 )}
                               >
                                 R${" "}
@@ -713,8 +707,7 @@ export default function SimulacaoPage() {
                               <TableCell
                                 className={obterCorCelula(
                                   "custoInstalacao",
-                                  fornecedor.custoInstalacao,
-                                  fornecedor
+                                  fornecedor.custoInstalacao
                                 )}
                               >
                                 R${" "}
@@ -725,8 +718,7 @@ export default function SimulacaoPage() {
                               <TableCell
                                 className={obterCorCelula(
                                   "tempoInstalacao",
-                                  fornecedor.tempoInstalacao,
-                                  fornecedor
+                                  fornecedor.tempoInstalacao
                                 )}
                               >
                                 {fornecedor.tempoInstalacao} dias
@@ -734,8 +726,7 @@ export default function SimulacaoPage() {
                               <TableCell
                                 className={obterCorCelula(
                                   "avaliacao",
-                                  fornecedor.avaliacao,
-                                  fornecedor
+                                  fornecedor.avaliacao
                                 )}
                               >
                                 <div className="flex items-center">
@@ -746,8 +737,7 @@ export default function SimulacaoPage() {
                               <TableCell
                                 className={obterCorCelula(
                                   "roiAnual",
-                                  calculo.roiAnual,
-                                  fornecedor
+                                  calculo.roiAnual
                                 )}
                               >
                                 <Badge
